@@ -60,12 +60,7 @@ public class LiraFragment extends Fragment {
             rvChat.scrollToPosition(messageList.size() - 1);
         }
 
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            commandProcessor = new CommandProcessor(requireContext(), mainActivity.getFlashlightHelper(), mainActivity.getAppLauncherHelper());
-        } else {
-            commandProcessor = new CommandProcessor(requireContext(), new FlashlightHelper(requireContext()), new AppLauncherHelper(requireContext()));
-        }
+        commandProcessor = new CommandProcessor(requireContext(), new FlashlightHelper(requireContext()), new AppLauncherHelper(requireContext()));
 
         btnSend.setOnClickListener(v -> sendMessage());
         fabMic.setOnClickListener(v -> toggleListening());

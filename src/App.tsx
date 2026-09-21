@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { AppLauncher } from '@capacitor/app-launcher';
 import { ChatMessage, SettingsState, LaunchableApp, ActiveAlarm, ActiveTimer, AppTheme, NavTab } from './types';
 import { TopBar } from './components/TopBar';
 import { BottomNav } from './components/BottomNav';
@@ -445,6 +447,16 @@ export const App: React.FC = () => {
       onOpenSettings: () => setIsSettingsOpen(true),
       onSetAlarm: (newAlarm: ActiveAlarm) => {
         setAlarms(prev => [...prev.filter(a => a.time !== newAlarm.time), newAlarm]);
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const [hours, minutes] = newAlarm.time.split(':').map(Number);
+            const label = encodeURIComponent(newAlarm.label || 'L.I.R.A. Assistant Alarm');
+            const intentUri = `intent:#Intent;action=android.intent.action.SET_ALARM;i.android.intent.extra.alarm.HOUR=${hours};i.android.intent.extra.alarm.MINUTES=${minutes};S.android.intent.extra.alarm.MESSAGE=${label};B.android.intent.extra.alarm.SKIP_UI=false;end`;
+            AppLauncher.openUrl({ url: intentUri }).catch(() => {});
+          } catch (err) {
+            console.error('Failed to launch native alarm intent:', err);
+          }
+        }
       },
       onSetTimer: (seconds: number, label: string) => {
         setActiveTimer({

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { AppLauncher } from '@capacitor/app-launcher';
 import { triggerVibration, soundManager } from '../utils/sound';
 import {
   Smartphone,
@@ -148,6 +150,9 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
             onClick={() => {
               triggerVibration('selection');
               setBluetoothOn(prev => !prev);
+              if (Capacitor.isNativePlatform()) {
+                AppLauncher.openUrl({ url: 'intent:#Intent;action=android.settings.BLUETOOTH_SETTINGS;end' }).catch(() => {});
+              }
             }}
             className={`p-3 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
               bluetoothOn
@@ -162,7 +167,7 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
               <div className={`text-xs font-bold ${bluetoothOn && isLight ? 'text-[#007AFF]' : ''}`}>
                 Bluetooth
               </div>
-              <div className="text-[10px] opacity-60">{bluetoothOn ? 'Включен' : 'Выключен'}</div>
+              <div className="text-[10px] opacity-60">{bluetoothOn ? 'Настройки' : 'Выключен'}</div>
             </div>
           </button>
 
@@ -172,6 +177,9 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
             onClick={() => {
               triggerVibration('selection');
               setWifiOn(prev => !prev);
+              if (Capacitor.isNativePlatform()) {
+                AppLauncher.openUrl({ url: 'intent:#Intent;action=android.settings.WIFI_SETTINGS;end' }).catch(() => {});
+              }
             }}
             className={`p-3 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
               wifiOn
@@ -186,7 +194,7 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
               <div className={`text-xs font-bold ${wifiOn && isLight ? 'text-[#00E676]' : ''}`}>
                 Wi-Fi / Сеть
               </div>
-              <div className="text-[10px] opacity-60">{wifiOn ? 'Подключен' : 'Отключен'}</div>
+              <div className="text-[10px] opacity-60">{wifiOn ? 'Настройки' : 'Отключен'}</div>
             </div>
           </button>
 
@@ -220,6 +228,9 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
             onClick={() => {
               triggerVibration('selection');
               setDndMode(prev => !prev);
+              if (Capacitor.isNativePlatform()) {
+                AppLauncher.openUrl({ url: 'intent:#Intent;action=android.settings.SOUND_SETTINGS;end' }).catch(() => {});
+              }
             }}
             className={`p-3 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
               dndMode
@@ -234,7 +245,7 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
               <div className={`text-xs font-bold ${dndMode && isLight ? 'text-purple-600' : ''}`}>
                 Не беспокоить
               </div>
-              <div className="text-[10px] opacity-60">{dndMode ? 'Без звука' : 'Обычный'}</div>
+              <div className="text-[10px] opacity-60">{dndMode ? 'Настройки' : 'Обычный'}</div>
             </div>
           </button>
         </div>
@@ -246,9 +257,16 @@ export const HardwareControlModal: React.FC<HardwareControlModalProps> = ({
           }`}
         >
           <div className="flex items-center justify-between text-xs font-semibold mb-2">
-            <span className="flex items-center gap-1.5">
+            <span
+              className="flex items-center gap-1.5 cursor-pointer hover:underline"
+              onClick={() => {
+                if (Capacitor.isNativePlatform()) {
+                  AppLauncher.openUrl({ url: 'intent:#Intent;action=android.settings.SOUND_SETTINGS;end' }).catch(() => {});
+                }
+              }}
+            >
               {volume === 0 ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-[#00E676]" />}
-              Громкость динамика
+              Громкость ⚙️
             </span>
             <span className="font-mono font-bold text-[#00E676]">{volume}%</span>
           </div>
