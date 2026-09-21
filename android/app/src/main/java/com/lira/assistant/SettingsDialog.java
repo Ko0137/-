@@ -160,12 +160,12 @@ public class SettingsDialog extends Dialog {
             PackageManager pm = context.getPackageManager();
             String pkg = context.getPackageName();
 
-            ComponentName defaultComp = new ComponentName(pkg, pkg + ".MainActivity");
+            ComponentName emeraldComp = new ComponentName(pkg, pkg + ".IconEmeraldAlias");
             ComponentName violetComp = new ComponentName(pkg, pkg + ".IconVioletAlias");
             ComponentName goldComp = new ComponentName(pkg, pkg + ".IconGoldAlias");
             ComponentName blueComp = new ComponentName(pkg, pkg + ".IconBlueAlias");
 
-            pm.setComponentEnabledSetting(defaultComp,
+            pm.setComponentEnabledSetting(emeraldComp,
                     "emerald".equals(iconTheme) ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP);
 
