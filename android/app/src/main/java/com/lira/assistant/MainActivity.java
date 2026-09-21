@@ -30,6 +30,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Reset running background states on startup so everything must be started manually
+        try {
+            android.content.SharedPreferences prefs = getSharedPreferences("lira_settings", MODE_PRIVATE);
+            prefs.edit()
+                 .putBoolean("pref_pedometer", false)
+                 .putBoolean("pref_overlay", false)
+                 .putBoolean("pref_mic", false)
+                 .apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         viewPager = findViewById(R.id.view_pager);
         bottomNav = findViewById(R.id.bottom_navigation);
 
