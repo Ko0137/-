@@ -38,17 +38,23 @@ public class AppLauncherHelper {
         }
 
         // Generic search through installed applications
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-        for (ApplicationInfo appInfo : packages) {
-            String appLabel = pm.getApplicationLabel(appInfo).toString().toLowerCase();
-            if (appLabel.contains(lowerQuery)) {
-                Intent intent = pm.getLaunchIntentForPackage(appInfo.packageName);
-                if (intent != null) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                    return true;
+        try {
+            List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+            if (packages != null) {
+                for (ApplicationInfo appInfo : packages) {
+                    String appLabel = pm.getApplicationLabel(appInfo).toString().toLowerCase();
+                    if (appLabel.contains(lowerQuery)) {
+                        Intent intent = pm.getLaunchIntentForPackage(appInfo.packageName);
+                        if (intent != null) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                            return true;
+                        }
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }

@@ -51,10 +51,12 @@ public class FileScannerDialog extends Dialog {
     }
 
     private void scanDirectory(File dir) {
+        if (fileList.size() >= 50) return;
         File[] files = dir.listFiles();
         if (files == null) return;
 
         for (File f : files) {
+            if (fileList.size() >= 50) break;
             if (f.isDirectory()) {
                 if (!f.getName().startsWith(".")) {
                     scanDirectory(f);
@@ -65,7 +67,6 @@ public class FileScannerDialog extends Dialog {
                     fileList.add(new FileItem(f.getName(), f.getAbsolutePath(), (f.length() / 1024) + " KB"));
                 }
             }
-            if (fileList.size() >= 50) break; // Limit for performance preview
         }
     }
 }

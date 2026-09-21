@@ -110,7 +110,11 @@
             android:name=".FloatingWidgetService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="This service runs a persistent voice assistant overlay widget so users can access L.I.R.A. features quickly." />
+        </service>
 
         <receiver
             android:name=".LiraWidgetProvider"
