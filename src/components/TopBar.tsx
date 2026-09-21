@@ -30,6 +30,29 @@ export const TopBar: React.FC<TopBarProps> = ({
   // Live time
   const [currentTime, setCurrentTime] = useState('09:41');
 
+  // Hidden dev console activation
+  const [devClicks, setDevClicks] = useState(0);
+  const [devTimeout, setDevTimeout] = useState<any>(null);
+
+  const handleDevClick = () => {
+    setDevClicks(prev => {
+      const next = prev + 1;
+      if (next >= 5) {
+        if (window.__LIRA_TOGGLE_CONSOLE__) {
+          window.__LIRA_TOGGLE_CONSOLE__();
+        }
+        triggerVibration('selection');
+        return 0;
+      }
+      return next;
+    });
+
+    if (devTimeout) clearTimeout(devTimeout);
+    setDevTimeout(setTimeout(() => {
+      setDevClicks(0);
+    }, 2000));
+  };
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -39,14 +62,17 @@ export const TopBar: React.FC<TopBarProps> = ({
     };
     updateTime();
     const interval = setInterval(updateTime, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+      if (devTimeout) clearTimeout(devTimeout);
+    };
+  }, [devTimeout]);
 
   if (isIOS) {
     return (
       <header id="topBar_ios" className="w-full select-none shrink-0 z-30">
         <div className="w-full px-4 pt-3 pb-2 flex items-center justify-between text-xs text-white font-medium bg-black/90 backdrop-blur-xl border-b border-white/10">
-          <div className="flex items-center gap-1.5 min-w-[70px]">
+          <div onClick={handleDevClick} className="flex items-center gap-1.5 min-w-[70px] cursor-pointer select-none active:opacity-60">
             <span className="font-semibold tracking-tight text-xs text-white/95 font-mono">
               {currentTime}
             </span>
@@ -140,7 +166,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       }`}
     >
       {/* Left: Branding & Clock */}
-      <div className="flex items-center gap-2">
+      <div onClick={handleDevClick} className="flex items-center gap-2 cursor-pointer select-none active:opacity-60">
         <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-[var(--accent-color,#00E676)]/15 border border-[var(--accent-color,#00E676)]/30 text-[var(--accent-color,#00E676)]">
           <Sparkles className="w-3.5 h-3.5" />
         </div>
