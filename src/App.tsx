@@ -111,6 +111,10 @@ export const App: React.FC = () => {
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
+  // Crash Reporting states
+  const [lastCrash, setLastCrash] = useState<{ message: string; stack: string; time: string; type: string } | null>(null);
+  const [showCrashReport, setShowCrashReport] = useState(false);
+
   // Dialogs
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -220,6 +224,16 @@ export const App: React.FC = () => {
 
   // 1. Initial Launch: Load History, check First Launch Privacy
   useEffect(() => {
+    // Check for previous crash
+    try {
+      const savedCrash = localStorage.getItem('lira_last_crash');
+      if (savedCrash) {
+        const parsed = JSON.parse(savedCrash);
+        setLastCrash(parsed);
+        setShowCrashReport(true);
+      }
+    } catch {}
+
     if (!settings.privacyAccepted) {
       setShowFirstLaunchPrivacy(true);
     }
@@ -808,6 +822,53 @@ export const App: React.FC = () => {
               >
                 Принять и продолжить
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Crash Report Modal */}
+        {showCrashReport && lastCrash && (
+          <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4 animate-in fade-in">
+            <div className="w-full max-w-sm bg-[#1C1212] text-white rounded-2xl p-5 border border-red-500/30 shadow-2xl">
+              <h3 className="font-bold text-base text-red-400 mb-2 flex items-center gap-1.5">
+                <span>⚠️</span> Отчет о сбое L.I.R.A.
+              </h3>
+              <p className="text-xs text-[#CCCCCC] leading-relaxed mb-4">
+                Приложение обнаружило ошибку при предыдущем запуске. Скопируйте этот отчет, чтобы мы могли исправить проблему:
+              </p>
+              
+              <div className="bg-black/50 rounded-xl p-3 border border-red-500/10 max-h-48 overflow-y-auto mb-4 font-mono text-[10px] text-red-300 leading-normal break-all">
+                <div className="font-bold mb-1">[Тип]: {lastCrash.type}</div>
+                <div className="font-bold mb-1">[Сообщение]: {lastCrash.message}</div>
+                <div className="text-neutral-400 select-all whitespace-pre-wrap">{lastCrash.stack}</div>
+                <div className="text-[9px] text-neutral-500 mt-2">Время: {new Date(lastCrash.time).toLocaleString()}</div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try {
+                      navigator.clipboard.writeText(`Type: ${lastCrash.type}\nMessage: ${lastCrash.message}\nStack: ${lastCrash.stack}`);
+                    } catch {}
+                    triggerVibration('selection');
+                  }}
+                  className="flex-1 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                >
+                  Копировать
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerVibration('selection');
+                    localStorage.removeItem('lira_last_crash');
+                    setShowCrashReport(false);
+                  }}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  Очистить и закрыть
+                </button>
+              </div>
             </div>
           </div>
         )}
