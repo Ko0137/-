@@ -23,6 +23,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        try {
+            db.execSQL("DROP TABLE IF EXISTS chat");
+            db.execSQL("DROP TABLE IF EXISTS habits");
+            db.execSQL("DROP TABLE IF EXISTS transactions");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         createTables(db);
     }
 
@@ -49,7 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<ChatMessage> list = new ArrayList<>();
         try {
             SQLiteDatabase db = getReadableDatabase();
-            createTables(db);
             Cursor cursor = db.rawQuery("SELECT * FROM chat ORDER BY rowid ASC", null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
@@ -89,7 +95,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<HabitItem> list = new ArrayList<>();
         try {
             SQLiteDatabase db = getReadableDatabase();
-            createTables(db);
             Cursor cursor = db.rawQuery("SELECT * FROM habits", null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
@@ -141,7 +146,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<TransactionItem> list = new ArrayList<>();
         try {
             SQLiteDatabase db = getReadableDatabase();
-            createTables(db);
             Cursor cursor = db.rawQuery("SELECT * FROM transactions ORDER BY id DESC", null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {

@@ -115,32 +115,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            private boolean isSyncing = false;
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                if (isSyncing) return;
+                isSyncing = true;
                 int targetId = R.id.nav_chat;
                 if (position == 1) targetId = R.id.nav_vibe;
                 else if (position == 2) targetId = R.id.nav_finance;
 
                 if (bottomNav != null && bottomNav.getSelectedItemId() != targetId) {
-                    bottomNav.setSelectedItemId(targetId);
+                    final int finalTargetId = targetId;
+                    bottomNav.post(() -> {
+                        try {
+                            bottomNav.setSelectedItemId(finalTargetId);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
+                isSyncing = false;
             }
         });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_chat) {
-                if (viewPager.getCurrentItem() != 0) viewPager.setCurrentItem(0, true);
-                return true;
-            } else if (itemId == R.id.nav_vibe) {
-                if (viewPager.getCurrentItem() != 1) viewPager.setCurrentItem(1, true);
-                return true;
-            } else if (itemId == R.id.nav_finance) {
-                if (viewPager.getCurrentItem() != 2) viewPager.setCurrentItem(2, true);
-                return true;
-            }
-            return false;
+            viewPager.post(() -> {
+                try {
+                    if (itemId == R.id.nav_chat) {
+                        if (viewPager.getCurrentItem() != 0) viewPager.setCurrentItem(0, false);
+                    } else if (itemId == R.id.nav_vibe) {
+                        if (viewPager.getCurrentItem() != 1) viewPager.setCurrentItem(1, false);
+                    } else if (itemId == R.id.nav_finance) {
+                        if (viewPager.getCurrentItem() != 2) viewPager.setCurrentItem(2, false);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            return true;
         });
     }
 
