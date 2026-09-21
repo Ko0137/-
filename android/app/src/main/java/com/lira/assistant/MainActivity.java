@@ -27,8 +27,79 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Register global uncaught exception handler for native crashes
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
+                try {
+                    android.content.SharedPreferences prefs = getSharedPreferences("lira_settings", MODE_PRIVATE);
+                    java.io.StringWriter sw = new java.io.StringWriter();
+                    java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+                    throwable.printStackTrace(pw);
+                    String stackTrace = sw.toString();
+
+                    prefs.edit()
+                         .putString("native_crash_message", throwable.getMessage() != null ? throwable.getMessage() : "Unknown Native Error")
+                         .putString("native_crash_stack", stackTrace)
+                         .putLong("native_crash_time", System.currentTimeMillis())
+                         .apply();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // Terminate cleanly
+                System.exit(1);
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Check for cached native crash report from previous launch
+        try {
+            android.content.SharedPreferences prefs = getSharedPreferences("lira_settings", MODE_PRIVATE);
+            if (prefs.contains("native_crash_message")) {
+                String msg = prefs.getString("native_crash_message", "Unknown Error");
+                String stack = prefs.getString("native_crash_stack", "No stack trace");
+                long time = prefs.getLong("native_crash_time", 0);
+                
+                java.util.Date date = new java.util.Date(time);
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault());
+                String dateStr = sdf.format(date);
+
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+                builder.setTitle("⚠️ Отчет о крахе L.I.R.A. (Native)");
+                builder.setMessage("Приложение обнаружило критический сбой при предыдущем запуске:\n\n" +
+                        "[Ошибка]: " + msg + "\n\n" +
+                        "[Время]: " + dateStr + "\n\n" +
+                        "[Стек]:\n" + stack);
+                
+                builder.setPositiveButton("Очистить и закрыть", (dialog, id) -> {
+                    prefs.edit()
+                         .remove("native_crash_message")
+                         .remove("native_crash_stack")
+                         .remove("native_crash_time")
+                         .apply();
+                });
+                
+                builder.setNeutralButton("Копировать", (dialog, id) -> {
+                    try {
+                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+                        android.content.ClipData clip = android.content.ClipData.newPlainText("Lira Native Crash", "Error: " + msg + "\nTime: " + dateStr + "\nStack:\n" + stack);
+                        if (clipboard != null) {
+                            clipboard.setPrimaryClip(clip);
+                            Toast.makeText(MainActivity.this, "Отчет скопирован!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                
+                builder.setCancelable(false);
+                builder.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Reset running background states on startup so everything must be started manually
         try {
