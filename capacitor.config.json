@@ -1,0 +1,13 @@
+{
+  "appId": "com.lira.assistant",
+  "appName": "L.I.R.A. Assistant",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#121214"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "L.I.R.A.",
+  "description": "L.I.R.A. - Voice and text assistant with app launching, notes, system controls, and speech synthesis.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">L.I.R.A. Assistant</string>
+    <string name="title_chat">L.I.R.A. Голос</string>
+    <string name="title_vibe">Vibe Активность</string>
+    <string name="title_finance">Финансы</string>
+    <string name="mic_hint">Скажите «Лира...» или нажмите кнопку</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#0E0E10</color>
+    <color name="bg_card">#16161B</color>
+    <color name="bg_card_secondary">#1E1E26</color>
+    <color name="primary_emerald">#00E676</color>
+    <color name="primary_emerald_dark">#00B0FF</color>
+    <color name="accent_blue">#2979FF</color>
+    <color name="accent_purple">#D500F9</color>
+    <color name="accent_red">#FF1744</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_secondary">#A0A0B0</color>
+    <color name="border_dark">#282834</color>
+</resources>
